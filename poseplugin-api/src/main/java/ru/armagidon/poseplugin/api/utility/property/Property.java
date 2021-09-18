@@ -1,4 +1,4 @@
-package ru.armagidon.poseplugin.api.property;
+package ru.armagidon.poseplugin.api.utility.property;
 
 import lombok.Getter;
 

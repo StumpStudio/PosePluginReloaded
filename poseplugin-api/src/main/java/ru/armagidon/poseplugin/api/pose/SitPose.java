@@ -1,7 +1,7 @@
 package ru.armagidon.poseplugin.api.pose;
 
 import ru.armagidon.poseplugin.api.PosePluginAPI;
-import ru.armagidon.poseplugin.api.property.PropertyMap;
+import ru.armagidon.poseplugin.api.utility.property.PropertyMap;
 
 public class SitPose<P> extends AbstractPose<P>
 {
