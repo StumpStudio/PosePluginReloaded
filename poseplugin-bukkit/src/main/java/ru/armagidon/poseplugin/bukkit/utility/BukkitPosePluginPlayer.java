@@ -6,7 +6,7 @@ import ru.armagidon.poseplugin.api.Pose;
 import ru.armagidon.poseplugin.api.PosingPlayer;
 
 //TODO implement bukkit PosePluginPlayer
-public final class BukkitPosePluginPlayer implements PosingPlayer<Player> {
+public final class BukkitPosingPlayer implements PosingPlayer<Player> {
     @NotNull
     @Override
     public Player getPlayer() {
