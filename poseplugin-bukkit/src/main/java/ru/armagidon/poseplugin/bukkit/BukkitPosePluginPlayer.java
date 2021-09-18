@@ -1,10 +1,10 @@
-package ru.armagidon.poseplugin.ru.armagidon.poseplugin.implementation;
+package ru.armagidon.poseplugin.bukkit;
 
 import org.apache.commons.lang.Validate;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
-import ru.armagidon.poseplugin.api.events.EventPublisher;
-import ru.armagidon.poseplugin.api.events.PoseChangeEvent;
+import ru.armagidon.poseplugin.api.event.EventPublisher;
+import ru.armagidon.poseplugin.api.event.PoseChangeEvent;
 import ru.armagidon.poseplugin.api.player.PosePluginPlayer;
 import ru.armagidon.poseplugin.api.pose.IPluginPose;
 

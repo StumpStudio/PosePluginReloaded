@@ -1,7 +1,7 @@
-package ru.armagidon.poseplugin.ru.armagidon.poseplugin.implementation;
+package ru.armagidon.poseplugin.bukkit;
 
 import org.bukkit.entity.Player;
-import ru.armagidon.poseplugin.api.ru.armagidon.poseplugin.utils.PlayerHider;
+import ru.armagidon.poseplugin.api.utility.PlayerHider;
 
 //TODO implement BukkitPlayerHider
 public class BukkitPlayerHider extends PlayerHider<Player>

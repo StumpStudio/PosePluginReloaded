@@ -1,4 +1,4 @@
-package ru.armagidon.poseplugin.api.ru.armagidon.poseplugin.utils;
+package ru.armagidon.poseplugin.api.utility;
 
 import org.jetbrains.annotations.NotNull;
 

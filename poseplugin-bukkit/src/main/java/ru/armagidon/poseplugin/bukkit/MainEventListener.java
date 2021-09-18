@@ -1,4 +1,4 @@
-package ru.armagidon.poseplugin.ru.armagidon.poseplugin.implementation;
+package ru.armagidon.poseplugin.bukkit;
 
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
