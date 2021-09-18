@@ -178,5 +178,5 @@ public void onPostPoseChange(PostPoseChangeEvent event){
      }
 }
 ```
-##PoseDescriptorModel
+## PoseDescriptorModel
 Every pose object is now a descriptor of each pose. You can create a pose object with some configurations and apply it to every player.
