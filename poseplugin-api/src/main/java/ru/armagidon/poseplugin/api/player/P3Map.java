@@ -48,13 +48,33 @@ public class P3Map<PlayerHandle>
     }
 
     /**
-     * Register's a player in ${@link #PLAYER_MAP}
+     * Registers a player in ${@link #PLAYER_MAP}
      * */
 
-    public void registerPlayer(@NotNull UUID uuid) {
+    public boolean registerPlayer(@NotNull UUID uuid) {
+        if (PLAYER_MAP.containsKey(uuid)) return false;
         writeLock.lock();
         try {
             PLAYER_MAP.put(uuid, FACTORY.apply(uuid));
+            return true;
+        } catch (IllegalArgumentException e) {
+            e.printStackTrace();
+            return false;
+        } finally {
+            writeLock.unlock();
+        }
+    }
+
+
+    /**
+     * Unregisters a player in ${@link #PLAYER_MAP}
+     * */
+    public boolean unregisterPlayer(@NotNull UUID uuid) {
+        if (!PLAYER_MAP.containsKey(uuid)) return false;
+        writeLock.lock();
+        try {
+            PLAYER_MAP.remove(uuid);
+            return true;
         } finally {
             writeLock.unlock();
         }
