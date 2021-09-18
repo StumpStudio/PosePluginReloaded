@@ -1,12 +1,13 @@
-package ru.armagidon.poseplugin.api.property;
+package ru.armagidon.poseplugin.api.utility;
 
 import lombok.Getter;
+import org.jetbrains.annotations.ApiStatus;
 
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
-public class Property<T>
-{
+@ApiStatus.Internal
+public final class Property<T> {
     private final Consumer<T> initializer;
     private final Consumer<T> setter;
     private final Supplier<T> getter;

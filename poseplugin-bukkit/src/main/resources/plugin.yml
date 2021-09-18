@@ -1,8 +1,8 @@
 name: PosePluginReloaded
 version: plugin-version
-main: ru.armagidon.poseplugin.PosePlugin
+main: ru.armagidon.poseplugin.bukkit.PosePlugin
 api-version: "1.15"
-authors: [Armagidon_MC]
+authors: [Armagidon_MC, Maxim724]
 description: Give you opportunity to change your pose
 softdepend:  [ProtocolLib]
 permissions:

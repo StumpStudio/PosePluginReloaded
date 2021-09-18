@@ -1,21 +1,41 @@
 package ru.armagidon.poseplugin.api.event;
 
-import lombok.Getter;
-import lombok.Setter;
-import ru.armagidon.poseplugin.api.player.PosePluginPlayer;
-import ru.armagidon.poseplugin.api.pose.IPluginPose;
+import org.jetbrains.annotations.NotNull;
+import ru.armagidon.poseplugin.api.Pose;
+import ru.armagidon.poseplugin.api.PosingPlayer;
 
-@Getter
-public class PoseChangeEvent<P> extends Event
-{
-    @Setter private boolean cancelled = false;
-    private final IPluginPose<P> old;
-    private final IPluginPose<P> current;
-    private final PosePluginPlayer<P> player;
+/**
+ * Представление события смены позы.
+ */
+public interface PoseChangeEvent<P> {
 
-    public PoseChangeEvent(IPluginPose<P> old, IPluginPose<P> current, PosePluginPlayer<P> player) {
-        this.old = old;
-        this.current = current;
-        this.player = player;
-    }
+    /**
+     * Новая поза.
+     * @return поза
+     */
+    @NotNull Pose<P> getNew();
+
+    /**
+     * Предыдущая поза.
+     * @return поза
+     */
+    @NotNull Pose<P> getPrevious();
+
+    /**
+     * Получить игрока, который позирует.
+     * @return позирующий игрок
+     */
+    @NotNull PosingPlayer<P> getPosingPlayer();
+
+    /**
+     * Отменёно ли событие?
+     * @return {@code true}, если да, иначе - {@code false}.
+     */
+    boolean isCancelled();
+
+    /**
+     * Отменить/Возобновить событие.
+     */
+    void setCancelled(final boolean cancelled);
+
 }

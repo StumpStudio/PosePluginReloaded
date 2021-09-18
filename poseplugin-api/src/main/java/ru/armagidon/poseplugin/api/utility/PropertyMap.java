@@ -1,11 +1,13 @@
-package ru.armagidon.poseplugin.api.property;
+package ru.armagidon.poseplugin.api.utility;
+
+import org.jetbrains.annotations.ApiStatus;
 
 import java.util.HashMap;
 import java.util.Map;
 import java.util.function.BiConsumer;
 
-public class PropertyMap
-{
+@ApiStatus.Internal
+public final class PropertyMap {
     private boolean registered;
 
     private final Map<String, Property<?>> propertyMap = new HashMap<>();
