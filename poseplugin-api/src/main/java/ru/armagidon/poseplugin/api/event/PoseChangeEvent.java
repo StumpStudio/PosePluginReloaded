@@ -1,4 +1,4 @@
-package ru.armagidon.poseplugin.api.events;
+package ru.armagidon.poseplugin.api.event;
 
 import lombok.Getter;
 import lombok.Setter;

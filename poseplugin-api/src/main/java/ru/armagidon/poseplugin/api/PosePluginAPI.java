@@ -3,9 +3,9 @@ package ru.armagidon.poseplugin.api;
 import lombok.Builder;
 import lombok.Getter;
 import ru.armagidon.poseplugin.api.player.P3Map;
-import ru.armagidon.poseplugin.api.ru.armagidon.poseplugin.utils.ArmorStandSeat;
-import ru.armagidon.poseplugin.api.ru.armagidon.poseplugin.utils.NameTagHider;
-import ru.armagidon.poseplugin.api.ru.armagidon.poseplugin.utils.PlayerHider;
+import ru.armagidon.poseplugin.api.utility.ArmorStandSeat;
+import ru.armagidon.poseplugin.api.utility.NameTagHider;
+import ru.armagidon.poseplugin.api.utility.PlayerHider;
 
 import java.util.Optional;
 import java.util.concurrent.locks.ReentrantReadWriteLock;

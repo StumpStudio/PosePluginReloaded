@@ -5,10 +5,10 @@ import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 import ru.armagidon.poseplugin.api.PosePluginAPI;
 import ru.armagidon.poseplugin.api.player.P3Map;
-import ru.armagidon.poseplugin.ru.armagidon.poseplugin.implementation.BukkitNameTagHider;
-import ru.armagidon.poseplugin.ru.armagidon.poseplugin.implementation.BukkitPlayerHider;
-import ru.armagidon.poseplugin.ru.armagidon.poseplugin.implementation.BukkitPosePluginPlayer;
-import ru.armagidon.poseplugin.ru.armagidon.poseplugin.implementation.MainEventListener;
+import ru.armagidon.poseplugin.bukkit.BukkitNameTagHider;
+import ru.armagidon.poseplugin.bukkit.BukkitPlayerHider;
+import ru.armagidon.poseplugin.bukkit.BukkitPosePluginPlayer;
+import ru.armagidon.poseplugin.bukkit.MainEventListener;
 
 public class PosePlugin extends JavaPlugin
 {
