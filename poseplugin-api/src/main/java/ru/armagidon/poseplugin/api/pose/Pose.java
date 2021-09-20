@@ -2,10 +2,10 @@ package ru.armagidon.poseplugin.api.pose;
 
 import ru.armagidon.poseplugin.api.utility.property.PropertyMap;
 
-public interface IPluginPose<P>
+public interface Pose<P>
 {
 
-    IPluginPose<?> STANDING = new StandingPose();
+    Pose<?> STANDING = new StandingPose();
 
     void start(P player);
 
@@ -15,7 +15,7 @@ public interface IPluginPose<P>
 
     PropertyMap getProperties();
 
-    class StandingPose implements IPluginPose<Object> {
+    class StandingPose implements Pose<Object> {
 
         private final PropertyMap properties = new PropertyMap();
 

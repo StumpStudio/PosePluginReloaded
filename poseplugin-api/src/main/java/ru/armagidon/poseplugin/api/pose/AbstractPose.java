@@ -2,7 +2,7 @@ package ru.armagidon.poseplugin.api.pose;
 
 import ru.armagidon.poseplugin.api.utility.property.PropertyMap;
 
-public abstract class AbstractPose<P> implements IPluginPose<P>
+public abstract class AbstractPose<P> implements Pose<P>
 {
 
     private final PropertyMap propertyMap = new PropertyMap();

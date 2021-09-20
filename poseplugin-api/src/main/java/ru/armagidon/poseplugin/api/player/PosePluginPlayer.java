@@ -1,7 +1,7 @@
 package ru.armagidon.poseplugin.api.player;
 
 import org.jetbrains.annotations.NotNull;
-import ru.armagidon.poseplugin.api.pose.IPluginPose;
+import ru.armagidon.poseplugin.api.pose.Pose;
 import ru.armagidon.poseplugin.api.pose.PoseType;
 
 import java.util.concurrent.CompletableFuture;
@@ -15,9 +15,9 @@ public interface PosePluginPlayer<PlayerHandle>
 
     @NotNull PlayerHandle getHandle();
 
-    boolean changePose(@NotNull IPluginPose<PlayerHandle> poseType);
+    boolean changePose(@NotNull Pose<PlayerHandle> poseType);
 
-    default CompletableFuture<Boolean> changePoseAsync(@NotNull IPluginPose<PlayerHandle> poseType) {
+    default CompletableFuture<Boolean> changePoseAsync(@NotNull Pose<PlayerHandle> poseType) {
         return CompletableFuture.supplyAsync(() -> changePose(poseType));
     }
 
@@ -25,12 +25,13 @@ public interface PosePluginPlayer<PlayerHandle>
         return getCurrentPose().getPoseType();
     }
 
-    @NotNull IPluginPose<PlayerHandle> getCurrentPose();
+    @NotNull
+    Pose<PlayerHandle> getCurrentPose();
 
-    boolean stopCurrentPose();
+    boolean stopPosing();
 
-    default CompletableFuture<Boolean> stopCurrentPoseAsync() {
-        return CompletableFuture.supplyAsync(this::stopCurrentPose);
+    default CompletableFuture<Boolean> stopPosingAsync() {
+        return CompletableFuture.supplyAsync(this::stopPosing);
     }
 
     Class<PlayerHandle> getHandleClass();

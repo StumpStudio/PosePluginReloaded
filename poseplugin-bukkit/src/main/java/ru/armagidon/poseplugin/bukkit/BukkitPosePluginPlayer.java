@@ -6,7 +6,7 @@ import org.jetbrains.annotations.NotNull;
 import ru.armagidon.poseplugin.api.event.EventPublisher;
 import ru.armagidon.poseplugin.api.event.PoseChangeEvent;
 import ru.armagidon.poseplugin.api.player.PosePluginPlayer;
-import ru.armagidon.poseplugin.api.pose.IPluginPose;
+import ru.armagidon.poseplugin.api.pose.Pose;
 
 //TODO implement bukkit PosePluginPlayer
 public class BukkitPosePluginPlayer implements PosePluginPlayer<Player>
@@ -14,7 +14,7 @@ public class BukkitPosePluginPlayer implements PosePluginPlayer<Player>
 
     private final Player handle;
     @SuppressWarnings("unchecked")
-    private IPluginPose<Player> POSE = (IPluginPose<Player>) IPluginPose.STANDING;
+    private Pose<Player> POSE = (Pose<Player>) Pose.STANDING;
 
     public BukkitPosePluginPlayer(Player handle) {
         Validate.notNull(handle);
@@ -27,7 +27,7 @@ public class BukkitPosePluginPlayer implements PosePluginPlayer<Player>
     }
 
     @Override
-    public @NotNull IPluginPose<Player> getCurrentPose() {
+    public @NotNull Pose<Player> getCurrentPose() {
         return POSE;
     }
 
@@ -40,14 +40,14 @@ public class BukkitPosePluginPlayer implements PosePluginPlayer<Player>
     //TODO add PoseStopEvent
     @Override
     @SuppressWarnings("unchecked")
-    public boolean stopCurrentPose() {
+    public boolean stopPosing() {
         POSE.stop(handle);
-        POSE = (IPluginPose<Player>) IPluginPose.STANDING;
+        POSE = (Pose<Player>) Pose.STANDING;
         return true;
     }
 
     @Override
-    public boolean changePose(@NotNull IPluginPose<Player> newPose) {
+    public boolean changePose(@NotNull Pose<Player> newPose) {
         PoseChangeEvent<Player> event = EventPublisher.call(new PoseChangeEvent<>(POSE, newPose, this));
         if (event.isCancelled()) {
             return false;
