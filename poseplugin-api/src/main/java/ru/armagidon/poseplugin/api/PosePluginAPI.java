@@ -1,7 +1,5 @@
 package ru.armagidon.poseplugin.api;
 
-import lombok.Builder;
-import lombok.Getter;
 import ru.armagidon.poseplugin.api.player.P3Map;
 import ru.armagidon.poseplugin.api.utility.ArmorStandSeat;
 import ru.armagidon.poseplugin.api.utility.NameTagHider;
@@ -12,8 +10,6 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 
 //Yeeeaah, SINGLETONS!
-@Getter
-@Builder(builderClassName = "Builder")
 public class PosePluginAPI<P>
 {
 
@@ -59,6 +55,64 @@ public class PosePluginAPI<P>
             return Optional.ofNullable((PosePluginAPI<P>) INSTANCE);
         } finally {
             readLock.unlock();
+        }
+    }
+
+    public static <P> Builder<P> builder() {
+        return new Builder<>();
+    }
+
+    public P3Map<P> getPlayerMap() {
+        return this.playerMap;
+    }
+
+    public PlayerHider<P> getPlayerHider() {
+        return this.playerHider;
+    }
+
+    public NameTagHider<P> getNameTagHider() {
+        return this.nameTagHider;
+    }
+
+    public ArmorStandSeat<P> getArmorStandSeat() {
+        return this.armorStandSeat;
+    }
+
+    public static class Builder<P> {
+        private P3Map<P> playerMap;
+        private PlayerHider<P> playerHider;
+        private NameTagHider<P> nameTagHider;
+        private ArmorStandSeat<P> armorStandSeat;
+
+        Builder() {
+        }
+
+        public Builder<P> playerMap(P3Map<P> playerMap) {
+            this.playerMap = playerMap;
+            return this;
+        }
+
+        public Builder<P> playerHider(PlayerHider<P> playerHider) {
+            this.playerHider = playerHider;
+            return this;
+        }
+
+        public Builder<P> nameTagHider(NameTagHider<P> nameTagHider) {
+            this.nameTagHider = nameTagHider;
+            return this;
+        }
+
+        public Builder<P> armorStandSeat(ArmorStandSeat<P> armorStandSeat) {
+            this.armorStandSeat = armorStandSeat;
+            return this;
+        }
+
+        public PosePluginAPI<P> build() {
+            return new PosePluginAPI<>(playerMap, playerHider, nameTagHider, armorStandSeat);
+        }
+
+        public String toString() {
+            return "PosePluginAPI.Builder(playerMap=" + this.playerMap + ", playerHider=" + this.playerHider + ", nameTagHider=" + this.nameTagHider + ", armorStandSeat=" + this.armorStandSeat + ")";
         }
     }
 }

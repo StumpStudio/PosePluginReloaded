@@ -1,7 +1,5 @@
 package ru.armagidon.poseplugin.api.utility.property;
 
-import lombok.Getter;
-
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
@@ -11,7 +9,7 @@ public class Property<T>
     private final Consumer<T> setter;
     private final Supplier<T> getter;
 
-    private @Getter boolean initialized = false;
+    private boolean initialized = false;
 
     public Property(Supplier<T> getter, Consumer<T> setter, Consumer<T> initializer) {
         this.setter = setter;
@@ -41,5 +39,9 @@ public class Property<T>
             initializer.accept(value);
             initialized = true;
         }
+    }
+
+    public boolean isInitialized() {
+        return this.initialized;
     }
 }
