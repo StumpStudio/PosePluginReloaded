@@ -9,39 +9,49 @@ import java.util.UUID;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 import java.util.function.Function;
 
-public class P3Map<PlayerHandle>
+public abstract class PlayerMap<PlayerHandle>
 {
+
+    @SuppressWarnings("all")
+    private static PlayerMap PLAYER_MAP_INSTANCE;
 
     private final ReentrantReadWriteLock lock = new ReentrantReadWriteLock();
     private final ReentrantReadWriteLock.WriteLock writeLock = lock.writeLock();
     private final ReentrantReadWriteLock.ReadLock readLock = lock.readLock();
 
-    private final Map<UUID, PosePluginPlayer<PlayerHandle>> PLAYER_MAP = new HashMap<>();
+    private final Map<UUID, Poser<PlayerHandle>> PLAYER_MAP = new HashMap<>();
 
-    private final Function<UUID, PosePluginPlayer<PlayerHandle>> FACTORY;
+    private final Function<UUID, Poser<PlayerHandle>> POSER_FACTORY;
 
-    public P3Map(Function<UUID, PosePluginPlayer<PlayerHandle>> playerFactory) {
-        this.FACTORY = playerFactory;
+    protected PlayerMap(Function<UUID, Poser<PlayerHandle>> poserFactory) {
+        if (PLAYER_MAP_INSTANCE != null)
+            throw new IllegalStateException("Player map is initialized");
+        this.POSER_FACTORY = poserFactory;
+    }
+
+    public static synchronized <P> PlayerMap<P> init(PlayerMap<P> instance) {
+        if (PLAYER_MAP_INSTANCE != null)
+            throw new IllegalStateException("Player map is initialized");
+        PLAYER_MAP_INSTANCE = instance;
+        return instance;
+    }
+
+    public static PlayerMap<?> getPlayerMapInstance() {
+        return PLAYER_MAP_INSTANCE;
     }
 
     /**
-     * Retrieves instance of ${@link PosePluginPlayer} from ${@link #PLAYER_MAP}
+     * Retrieves instance of ${@link Poser} from ${@link #PLAYER_MAP}
      * @param uuid UUID of a player.
-     * @param playerClazz Class of a player's handle.
-     * @return Instance of ${@link PosePluginPlayer} with given UUID or null when such player with given UUID does not exist.
+     * @return Instance of ${@link Poser} with given UUID or null when such player with given UUID does not exist.
      * @throws ClassCastException when given playerClazz and player's actual handle class does not match.
      * */
 
     @Nullable
-    public PosePluginPlayer<PlayerHandle> getPlayer(@NotNull UUID uuid, @NotNull Class<PlayerHandle> playerClazz) throws IllegalArgumentException, ClassCastException {
+    public Poser<PlayerHandle> getPlayer(@NotNull UUID uuid) throws IllegalArgumentException {
         readLock.lock();
         try {
-            PosePluginPlayer<PlayerHandle> player = PLAYER_MAP.get(uuid);
-            if (player == null)
-                return null;
-            if (!player.getHandleClass().equals(playerClazz))
-                throw new ClassCastException("Handle's class of given player's uuid does not match with give player class");
-            return player;
+            return PLAYER_MAP.get(uuid);
         } finally {
             readLock.unlock();
         }
@@ -55,7 +65,7 @@ public class P3Map<PlayerHandle>
         if (PLAYER_MAP.containsKey(uuid)) return false;
         writeLock.lock();
         try {
-            PLAYER_MAP.put(uuid, FACTORY.apply(uuid));
+            PLAYER_MAP.put(uuid, POSER_FACTORY.apply(uuid));
             return true;
         } catch (IllegalArgumentException e) {
             e.printStackTrace();

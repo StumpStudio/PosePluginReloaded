@@ -1,6 +1,6 @@
 package ru.armagidon.poseplugin.api.event;
 
-import ru.armagidon.poseplugin.api.player.PosePluginPlayer;
+import ru.armagidon.poseplugin.api.player.Poser;
 import ru.armagidon.poseplugin.api.pose.Pose;
 
 public class PoseChangeEvent<P> extends Event
@@ -8,9 +8,9 @@ public class PoseChangeEvent<P> extends Event
     private boolean cancelled = false;
     private final Pose<P> old;
     private Pose<P> current;
-    private final PosePluginPlayer<P> player;
+    private final Poser<P> player;
 
-    public PoseChangeEvent(Pose<P> old, Pose<P> current, PosePluginPlayer<P> player) {
+    public PoseChangeEvent(Pose<P> old, Pose<P> current, Poser<P> player) {
         this.old = old;
         this.current = current;
         this.player = player;
@@ -28,7 +28,7 @@ public class PoseChangeEvent<P> extends Event
         return this.current;
     }
 
-    public PosePluginPlayer<P> getPlayer() {
+    public Poser<P> getPlayer() {
         return this.player;
     }
 

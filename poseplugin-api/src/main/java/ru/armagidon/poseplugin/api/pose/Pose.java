@@ -11,8 +11,6 @@ public interface Pose<P>
 
     void stop(P player);
 
-    PoseType getPoseType();
-
     PropertyMap getProperties();
 
     class StandingPose implements Pose<Object> {
@@ -32,11 +30,6 @@ public interface Pose<P>
         @Override
         public PropertyMap getProperties() {
             return properties;
-        }
-
-        @Override
-        public PoseType getPoseType() {
-            return PoseType.STANDING;
         }
     }
 }
