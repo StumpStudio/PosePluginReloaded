@@ -5,6 +5,8 @@ api-version: "1.15"
 authors: [Armagidon_MC]
 description: Give you opportunity to change your pose
 softdepend:  [ProtocolLib]
+commands:
+  sit:
 permissions:
   poseplugin.admin:
     default: op

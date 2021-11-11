@@ -5,20 +5,22 @@ import java.util.function.Supplier;
 
 public class Property<T>
 {
+    private final String id;
     private final Consumer<T> initializer;
     private final Consumer<T> setter;
     private final Supplier<T> getter;
 
     private boolean initialized = false;
 
-    public Property(Supplier<T> getter, Consumer<T> setter, Consumer<T> initializer) {
+    public Property(String id, Supplier<T> getter, Consumer<T> setter, Consumer<T> initializer) {
+        this.id = id;
         this.setter = setter;
         this.getter = getter;
         this.initializer = initializer;
     }
 
-    public Property(Supplier<T> getter, Consumer<T> setter){
-        this(getter,setter,setter);
+    public Property(String id, Supplier<T> getter, Consumer<T> setter){
+        this(id, getter,setter,setter);
     }
 
     public T getValue() {
@@ -39,6 +41,10 @@ public class Property<T>
             initializer.accept(value);
             initialized = true;
         }
+    }
+
+    public String getId() {
+        return id;
     }
 
     public boolean isInitialized() {

@@ -6,6 +6,7 @@ import org.jetbrains.annotations.Nullable;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 import java.util.function.Function;
 
@@ -19,7 +20,7 @@ public abstract class PlayerMap<PlayerHandle>
     private final ReentrantReadWriteLock.WriteLock writeLock = lock.writeLock();
     private final ReentrantReadWriteLock.ReadLock readLock = lock.readLock();
 
-    private final Map<UUID, Poser<PlayerHandle>> PLAYER_MAP = new HashMap<>();
+    private final Map<UUID, Poser<PlayerHandle>> PLAYER_MAP = new ConcurrentHashMap<>();
 
     private final Function<UUID, Poser<PlayerHandle>> POSER_FACTORY;
 
@@ -36,7 +37,8 @@ public abstract class PlayerMap<PlayerHandle>
         return instance;
     }
 
-    public static PlayerMap<?> getPlayerMapInstance() {
+    @SuppressWarnings("unchecked")
+    public static <P>PlayerMap<P> getInstance() {
         return PLAYER_MAP_INSTANCE;
     }
 
@@ -84,6 +86,17 @@ public abstract class PlayerMap<PlayerHandle>
         writeLock.lock();
         try {
             PLAYER_MAP.remove(uuid);
+            return true;
+        } finally {
+            writeLock.unlock();
+        }
+    }
+
+    public boolean unregisterAll() {
+        writeLock.lock();
+        try {
+            PLAYER_MAP.values().forEach(Poser::stopPosing);
+            PLAYER_MAP.clear();
             return true;
         } finally {
             writeLock.unlock();

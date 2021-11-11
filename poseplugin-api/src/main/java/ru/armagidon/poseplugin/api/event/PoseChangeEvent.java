@@ -3,14 +3,16 @@ package ru.armagidon.poseplugin.api.event;
 import ru.armagidon.poseplugin.api.player.Poser;
 import ru.armagidon.poseplugin.api.pose.Pose;
 
+import java.util.Optional;
+
 public class PoseChangeEvent<P> extends Event
 {
     private boolean cancelled = false;
-    private final Pose<P> old;
+    private final Optional<Pose<P>> old;
     private Pose<P> current;
     private final Poser<P> player;
 
-    public PoseChangeEvent(Pose<P> old, Pose<P> current, Poser<P> player) {
+    public PoseChangeEvent(Optional<Pose<P>> old, Pose<P> current, Poser<P> player) {
         this.old = old;
         this.current = current;
         this.player = player;
@@ -20,8 +22,8 @@ public class PoseChangeEvent<P> extends Event
         return this.cancelled;
     }
 
-    public Pose<P> getOld() {
-        return this.old;
+    public Optional<Pose<P>> getOld() {
+        return old;
     }
 
     public Pose<P> getCurrent() {

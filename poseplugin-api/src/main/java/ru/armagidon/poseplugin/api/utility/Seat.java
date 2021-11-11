@@ -9,7 +9,6 @@ public abstract class Seat<P>
     private P seated = null;
     private boolean locked = false;
 
-
     public abstract void handlePlayerSeat(@NotNull P player, int yOffset);
 
     public synchronized void seatPlayer(@NotNull P seated, int yOffset) {
@@ -40,4 +39,6 @@ public abstract class Seat<P>
     public boolean isUsed() {
         return locked;
     }
+
+    public abstract int getId();
 }

@@ -3,6 +3,7 @@ package ru.armagidon.poseplugin.api.player;
 import org.jetbrains.annotations.NotNull;
 import ru.armagidon.poseplugin.api.pose.Pose;
 
+import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 
 public interface Poser<PlayerHandle>
@@ -32,11 +33,11 @@ public interface Poser<PlayerHandle>
         }
 
         /**
-         * @return Instance of current {@link Pose} object that is set
+         * @return Optional of current {@link Pose} object that is set. May be absent when no pose is set
          * */
 
         @NotNull
-        Pose<PlayerHandle> getCurrentPose();
+        Optional<Pose<PlayerHandle>> getCurrentPose();
 
         /**
          * Stops player's pose. Throwing the {@link PoseStopEvent}

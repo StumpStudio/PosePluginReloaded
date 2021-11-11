@@ -29,7 +29,9 @@ public class Pool<V>
 
     public void access(int id, Consumer<V> action) {
         Objects.requireNonNull(action);
-        if (!storage.containsKey(id)) return;
+        if (!storage.containsKey(id)) {
+            return;
+        }
         action.accept(storage.get(id));
     }
 

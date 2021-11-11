@@ -3,18 +3,30 @@ package ru.armagidon.poseplugin.bukkit;
 import com.comphenix.protocol.PacketType;
 import com.comphenix.protocol.ProtocolLibrary;
 import com.comphenix.protocol.events.PacketAdapter;
+import com.comphenix.protocol.events.PacketContainer;
 import com.comphenix.protocol.events.PacketEvent;
+import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.entity.ArmorStand;
 import org.bukkit.entity.Player;
+import org.bukkit.event.Listener;
 import org.bukkit.plugin.Plugin;
+import ru.armagidon.poseplugin.api.player.PlayerMap;
+import ru.armagidon.poseplugin.api.player.Poser;
 import ru.armagidon.poseplugin.api.utility.Seat;
 import ru.armagidon.poseplugin.bukkit.wrappers.WrapperPlayClientSteerVehicle;
+import ru.armagidon.poseplugin.bukkit.wrappers.WrapperPlayServerEntityTeleport;
+import ru.armagidon.poseplugin.bukkit.wrappers.WrapperPlayServerMount;
 
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Function;
+
+import static com.comphenix.protocol.PacketType.Play.Client.STEER_VEHICLE;
+import static ru.armagidon.poseplugin.bukkit.utilities.SyncUtils.sync;
+
 
 public class BukkitSeat extends Seat<Player>
 {
@@ -30,7 +42,11 @@ public class BukkitSeat extends Seat<Player>
 
     @Override
     public synchronized void handlePlayerRaise(Player seated) {
-        seat.remove();
+        sync(() -> {
+            seated.teleport(seat.getLocation().clone().add(0, 0.2, 0).setDirection(seated.getLocation().getDirection()));
+            seat.remove();
+            seat = null;
+        });
     }
 
     private static ArmorStand createSeat(Location location) {
@@ -44,39 +60,86 @@ public class BukkitSeat extends Seat<Player>
         }));
     }
 
-    public static final class SeatDaemon extends PacketAdapter {
+    @Override
+    public int getId() {
+        return seat != null ? seat.getEntityId() : -1;
+    }
+
+    //TODO add seat rotation
+    public static final class SeatDaemon extends PacketAdapter implements Listener {
 
         private static SeatDaemon DAEMON_INSTANCE;
-        private final Map<Player, Function<Player, Boolean>> seats = new ConcurrentHashMap<>();
+
+        private final Map<Player, DaemonizedSeat> seats = new ConcurrentHashMap<>();
+
 
         private SeatDaemon(Plugin plugin) {
-            super(plugin, PacketType.Play.Client.STEER_VEHICLE);
+            super(plugin, STEER_VEHICLE, PacketType.Play.Server.MOUNT);
         }
 
         @Override
         public void onPacketReceiving(PacketEvent event) {
-            final var wrapper = new WrapperPlayClientSteerVehicle(event.getPacket());
-            if (wrapper.isUnmount()) {
-                if (seats.containsKey(event.getPlayer())) {
-                    Optional.ofNullable(seats.get(event.getPlayer())).ifPresent(callback -> {
-                        final var cancelled = callback.apply(event.getPlayer());
-                        if (cancelled) {
-                            event.setCancelled(true);
-                        } else {
-                            seats.remove(event.getPlayer());
+            final var packet = event.getPacket();
+            if (packet.getType().equals(STEER_VEHICLE)) {
+                final var wrapper = new WrapperPlayClientSteerVehicle(event.getPacket());
+                final var player = event.getPlayer();
+                if (seats.containsKey(player)) {
+                    Optional.ofNullable(seats.get(player)).ifPresent(daemonizedSeat -> {
+                        float yaw = daemonizedSeat.seat().getSeated().getLocation().getYaw();
+
+                        PacketContainer rotPacket = ProtocolLibrary.getProtocolManager().createPacket(PacketType.Play.Server.ENTITY_LOOK);
+                        rotPacket.getIntegers().writeSafely(0, daemonizedSeat.seat().getId());
+                        rotPacket.getBytes().write(0, (byte) (yaw * 256.0F / 360.0F)).writeSafely(1, (byte) 0);
+
+                        ProtocolLibrary.getProtocolManager().broadcastServerPacket(rotPacket);
+
+                        if (wrapper.isUnmount()) {
+                            final var cancelled = daemonizedSeat.dismountCallback()
+                                    .apply(PlayerMap.<Player>getInstance().getPlayer(player.getUniqueId()));
+                            if (cancelled)
+                                event.setCancelled(true);
+                            else
+                                disconnect(event.getPlayer());
                         }
                     });
                 }
             }
         }
 
-        private boolean connect(BukkitSeat seat, Function<Player, Boolean> dismountCallback) {
+        @Override
+        public void onPacketSending(PacketEvent event) {
+            final var wrapper = new WrapperPlayServerMount(event.getPacket());
+            final var entity = wrapper.getEntity(event.getPlayer().getWorld());
+            if (entity == null) return;
+
+            Optional<Player> ownerOptional = seats.values().stream()
+                    .filter(seat -> seat.seat().getId() == entity.getEntityId())
+                    .map(s -> s.seat().getSeated()).findFirst();
+
+            ownerOptional.ifPresent(owner -> {
+                wrapper.setPassengers(List.of(owner));
+                event.setPacket(wrapper.getHandle());
+            });
+
+        }
+
+        public boolean connect(Seat<Player> seat, Function<Poser<Player>, Boolean> dismountCallback) {
             if (!seats.containsKey(seat.getSeated())) {
                 if (!seat.isUsed()) return false;
-                seats.put(seat.getSeated(), dismountCallback);
+                seats.put(seat.getSeated(), new DaemonizedSeat(seat, dismountCallback));
                 return true;
             }
             return false;
+        }
+
+        private void disconnect(Player player) {
+            if (!seats.containsKey(player)) return;
+            seats.remove(player);
+        }
+
+        public void disconnect(Seat<Player> seat) {
+            if (!seats.containsKey(seat.getSeated())) return;
+            seats.remove(seat.getSeated());
         }
 
         public static void start(Plugin plugin) {
@@ -87,8 +150,10 @@ public class BukkitSeat extends Seat<Player>
             }
         }
 
-        public static SeatDaemon getDaemonInstance() {
+        public static SeatDaemon getInstance() {
             return DAEMON_INSTANCE;
         }
     }
+
+    private record DaemonizedSeat(Seat<Player> seat, Function<Poser<Player>, Boolean> dismountCallback) {}
 }
