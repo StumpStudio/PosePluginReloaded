@@ -2,6 +2,7 @@ package ru.armagidon.poseplugin.api.player;
 
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import ru.armagidon.poseplugin.api.pose.Pose;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -40,6 +41,12 @@ public abstract class PlayerMap<PlayerHandle>
     @SuppressWarnings("unchecked")
     public static <P> PlayerMap<P> getInstance() {
         return PLAYER_MAP_INSTANCE;
+    }
+
+    public static <P> Poser<P> getPlayer(UUID uuid, Class<P> clazz) {
+        final var player = PlayerMap.<P>getInstance().getPlayer(uuid);
+        if (player != null && clazz.isAssignableFrom(player.getHandle().getClass())) return player;
+        return null;
     }
 
     /**

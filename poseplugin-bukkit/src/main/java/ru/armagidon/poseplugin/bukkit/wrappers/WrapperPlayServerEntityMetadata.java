@@ -54,12 +54,14 @@ public class WrapperPlayServerEntityMetadata extends AbstractPacket {
 
 	/**
 	 * Set Entity ID.
-	 * 
-	 * @param value - new value.
-	 */
-	public void setEntityID(int value) {
+	 *
+     * @param value - new value.
+     * @return
+     */
+	public WrapperPlayServerEntityMetadata setEntityID(int value) {
 		handle.getIntegers().write(0, value);
-	}
+        return this;
+    }
 
 	/**
 	 * Retrieve the entity of the painting that will be spawned.
@@ -92,10 +94,12 @@ public class WrapperPlayServerEntityMetadata extends AbstractPacket {
 
 	/**
 	 * Set Metadata.
-	 * 
+	 *
 	 * @param value - new value.
+	 * @return
 	 */
-	public void setMetadata(List<WrappedWatchableObject> value) {
+	public WrapperPlayServerEntityMetadata setMetadata(List<WrappedWatchableObject> value) {
 		handle.getWatchableCollectionModifier().write(0, value);
+		return this;
 	}
 }

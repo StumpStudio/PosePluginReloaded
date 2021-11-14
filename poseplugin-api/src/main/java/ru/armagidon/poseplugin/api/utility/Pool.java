@@ -2,43 +2,44 @@ package ru.armagidon.poseplugin.api.utility;
 
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ThreadLocalRandom;
 import java.util.function.Consumer;
-import java.util.function.Supplier;
+import java.util.function.Function;
 
-public class Pool<V>
+import static ru.armagidon.poseplugin.api.utility.Optex.optex;
+
+public class Pool<K, V>
 {
-    private static final ThreadLocalRandom random = ThreadLocalRandom.current();
-    private final Map<Integer, V> storage = new ConcurrentHashMap<>();
-    private final Supplier<V> factory;
+    protected final Map<K, V> storage = new ConcurrentHashMap<>();
+    protected final Function<K, V> factory;
 
-    public Pool(Supplier<V> factory) {
+    public Pool(Function<K, V> factory) {
         this.factory = factory;
     }
 
-    public int create(Consumer<V> action) {
-        Objects.requireNonNull(action);
-        var id = 0;
-        while (storage.containsKey(id)) id = random.nextInt();
-        final var value = factory.get();
-        action.accept(value);
-        storage.put(id, value);
-        return id;
+    public K create(K key, Consumer<V> action) {
+        return optex(factory.apply(key))
+                .ifPresent(action)
+                .ifPresent(v -> storage.put(key, v))
+                .map(v -> key).get();
     }
 
-    public void access(int id, Consumer<V> action) {
+    public void access(K key, Consumer<V> action) {
         Objects.requireNonNull(action);
-        if (!storage.containsKey(id)) {
-            return;
-        }
-        action.accept(storage.get(id));
+        Optional.ofNullable(storage.get(key)).ifPresent(action);
     }
 
-    public void flush(int id) {
-        if (!storage.containsKey(id)) return;
-        storage.remove(id);
+    public void flush(K key) {
+        if (!storage.containsKey(key)) return;
+        storage.remove(key);
     }
+
+    public void flush(K key, Consumer<V> preRemovalCallback) {
+        Optional.ofNullable(storage.get(key)).ifPresent(preRemovalCallback);
+        flush(key);
+    }
+
 }
 
 

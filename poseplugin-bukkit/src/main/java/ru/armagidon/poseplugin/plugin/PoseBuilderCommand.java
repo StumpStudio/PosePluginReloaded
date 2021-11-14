@@ -25,7 +25,7 @@ public class PoseBuilderCommand implements CommandExecutor, TabCompleter
         if (!(sender instanceof Player player)) return true;
 
         BatchBuilder<Player> builder = new BukkitBatchBuilder();
-
+        if (args.length == 0) return false;
         Arrays.stream(args)
                 .filter(s -> batchBuilderMethods()
                         .map(Method::getName)

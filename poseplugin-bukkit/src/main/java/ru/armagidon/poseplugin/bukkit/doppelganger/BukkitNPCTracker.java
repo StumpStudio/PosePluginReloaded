@@ -12,6 +12,7 @@ import org.bukkit.event.player.PlayerTeleportEvent;
 import org.bukkit.plugin.Plugin;
 import ru.armagidon.poseplugin.api.subsystems.doppelganger.Doppelganger;
 import ru.armagidon.poseplugin.api.subsystems.doppelganger.NPCTracker;
+import ru.armagidon.poseplugin.api.subsystems.doppelganger.Doppelganger.Pos;
 
 import java.util.concurrent.CompletableFuture;
 
@@ -23,7 +24,7 @@ public class BukkitNPCTracker extends NPCTracker<Player> implements Listener
 
 
     @Override
-    public void registerNPC(Doppelganger<Player, ?> doppelganger) {
+    public void registerNPC(Doppelganger<Player, ?, ?> doppelganger) {
         super.registerNPC(doppelganger);
         final var location = doppelganger.getOriginal().getLocation().clone();
         Bukkit.getOnlinePlayers().stream()
@@ -35,29 +36,19 @@ public class BukkitNPCTracker extends NPCTracker<Player> implements Listener
     }
 
     @Override
-    public void unregisterNPC(Doppelganger<Player, ?> doppelganger) {
-        doppelganger.despawn();
+    public void unregisterNPC(Doppelganger<Player, ?, ?> doppelganger) {
+        doppelganger.broadCastDespawn();
         super.unregisterNPC(doppelganger);
     }
 
     @EventHandler
     public void onMove(PlayerMoveEvent e) {
-        final var from = e.getFrom();
-        final var to = e.getTo();
-        if (to == null) return;
-        if (from.getX() == to.getX() && from.getY() == to.getY() && from.getZ() == to.getZ()) return;
-        final var mover = e.getPlayer();
-        CompletableFuture.runAsync(() -> recalculateTrackerList(to, mover));
+        handleMoveEvent(e);
     }
 
     @EventHandler
     public void onTeleport(PlayerTeleportEvent e) {
-        final var from = e.getFrom();
-        final var to = e.getTo();
-        if (to == null) return;
-        if (from.getX() == to.getX() && from.getY() == to.getY() && from.getZ() == to.getZ()) return;
-        final var mover = e.getPlayer();
-        CompletableFuture.runAsync(() -> recalculateTrackerList(to, mover));
+        handleMoveEvent(e);
     }
 
     @EventHandler
@@ -67,7 +58,10 @@ public class BukkitNPCTracker extends NPCTracker<Player> implements Listener
         CompletableFuture.runAsync(() -> {
             //Add mover if he is within a view distance
             getTrackers().entrySet().stream()
-                    .filter(entry -> entry.getKey().distance(currentLocation.getX(), currentLocation.getY(), currentLocation.getZ()) < getViewDistance())
+                    .filter(entry -> entry.getKey().getPosition()
+                            .withinARadius(new Pos(currentLocation.getWorld().getName(),
+                                    currentLocation.getX(), currentLocation.getY(),
+                                    currentLocation.getZ()), getViewDistance()))
                     .forEach(s -> {
                         s.getKey().render(mover);
                         s.getValue().add(mover);
@@ -85,10 +79,12 @@ public class BukkitNPCTracker extends NPCTracker<Player> implements Listener
     }
 
     private void recalculateTrackerList(final Location current, final Player mover) {
-        //Remove mover if them is no longer within a view distance
+        //Remove mover if they are no longer within a view distance
         getTrackers().entrySet().stream()
                 .filter(entry -> isTrackerOf(entry.getKey(), mover))
-                .filter(entry -> entry.getKey().distance(current.getX(), current.getY(), current.getZ()) > getViewDistance())
+                .filter(entry -> !entry.getKey().getPosition().
+                        withinARadius(new Pos(current.getWorld().getName(),
+                                current.getX(), current.getY(), current.getZ()), getViewDistance()))
                 .forEach(s -> {
                     s.getKey().unrender(mover);
                     s.getValue().remove(mover);
@@ -97,10 +93,21 @@ public class BukkitNPCTracker extends NPCTracker<Player> implements Listener
         //Add mover if he is within a view distance
         getTrackers().entrySet().stream()
                 .filter(entry -> !isTrackerOf(entry.getKey(), mover))
-                .filter(entry -> entry.getKey().distance(current.getX(), current.getY(), current.getZ()) < getViewDistance())
+                .filter(entry -> entry.getKey().getPosition().
+                        withinARadius(new Pos(current.getWorld().getName(),
+                                current.getX(), current.getY(), current.getZ()), getViewDistance()))
                 .forEach(s -> {
                     s.getKey().render(mover);
                     s.getValue().add(mover);
                 });
+    }
+
+    private void handleMoveEvent(PlayerMoveEvent e) {
+        final var from = e.getFrom();
+        final var to = e.getTo();
+        if (to == null || from.getWorld() == null || to.getWorld() == null) return;
+        if (from.getX() == to.getX() && from.getY() == to.getY() && from.getZ() == to.getZ() && from.getWorld().equals(to.getWorld())) return;
+        final var mover = e.getPlayer();
+        CompletableFuture.runAsync(() -> recalculateTrackerList(to, mover));
     }
 }

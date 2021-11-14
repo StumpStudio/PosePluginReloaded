@@ -51,19 +51,14 @@ public final class SeatDaemon extends PacketAdapter {
             final var player = event.getPlayer();
             if (seats.containsKey(player)) {
                 final var seat = seats.get(player);
-                optex(seat)
-                    .map(DaemonizedSeat::seat)
-                    .ifPresent(s -> rotateSeat(s.getId(), s.getSeated().getLocation().getYaw()))
-                    .rollback().map(DaemonizedSeat::dismountCallback).ifPresent(callback -> {
-                        if (wrapper.isUnmount()) {
-                            final var cancelled = callback
-                                    .apply(PlayerMap.<Player>getInstance().getPlayer(player.getUniqueId()));
-                            if (cancelled)
-                                event.setCancelled(true);
-                            else
-                                disconnect(event.getPlayer());
-                        }
-                    });
+                optex(seat).map(DaemonizedSeat::seat)
+                        .ifPresent(s -> rotateSeat(s.getId(), s.getSeated().getLocation().getYaw()))
+                        .rollbackMapping()
+                        .map(DaemonizedSeat::dismountCallback)
+                        .filter(c -> wrapper.isUnmount())
+                        .map(callback -> callback.apply(PlayerMap.getPlayer(player.getUniqueId(), Player.class)))
+                        .toBooleanOptex()
+                        .ifElse(() -> event.setCancelled(true), () -> disconnect(event.getPlayer()));
             }
         }
     }

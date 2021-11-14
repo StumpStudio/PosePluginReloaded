@@ -8,10 +8,10 @@ import java.util.function.Function;
 import java.util.function.Predicate;
 
 //Optional extension
-public final class Optex<V,C>
+public class Optex<V,C>
 {
     private Optex<C, C> saved;
-    private final Optional<V> data;
+    protected final Optional<V> data;
 
     private Optex(V value) {
         this(Optional.ofNullable(value));
@@ -26,12 +26,11 @@ public final class Optex<V,C>
         this.saved = saved;
     }
 
-    public Optex<V,C> filter(Predicate<? super V> predicate) {
-        data.filter(predicate);
-        return this;
+    public Optex<V, C> filter(Predicate<? super V> predicate) {
+        return new Optex<>(data.filter(predicate), saved);
     }
 
-    public Optex<V,C> ifPresent(Consumer<? super V> action) {
+    public Optex<V, C> ifPresent(Consumer<? super V> action) {
         data.ifPresent(action);
         return this;
     }
@@ -45,19 +44,42 @@ public final class Optex<V,C>
         return new Optex<>(data.map(mapper), new Optex<>(data));
     }
 
-    public Optex<C, C> rollback() {
+    public Optex<C, C> rollbackMapping() {
         if (saved == null)
             throw new NullPointerException("No optexes were saved");
         return saved;
     }
 
- /*   public <U> Optex<V, C> mappedBranch(Function<V, ? extends U> mapper, Consumer<U> action) {
-        data.map(mapper).ifPresent(action);
-        return this;
-    }*/
+    public BooleanOptex<C> toBooleanOptex() {
+        if (data.isEmpty() || !(data.get() instanceof Boolean)) {
+            return new BooleanOptex<>(Optional.empty());
+        }
+        return new BooleanOptex<>((Optional<Boolean>) data);
+    }
+
+    public V get() {
+        return data.get();
+    }
 
     @NotNull
     public static <V> Optex<V, V> optex(V value) {
         return new Optex<>(value);
+    }
+
+    public static class BooleanOptex<C> extends Optex<Boolean, C> {
+
+        private BooleanOptex(Optional<Boolean> value) {
+            super(value);
+        }
+
+        public BooleanOptex<C> ifElse(Runnable trueStatement, Runnable falseStatement) {
+            if (data.isEmpty()) return this;
+            if (!data.get())
+                falseStatement.run();
+            else
+                trueStatement.run();
+            return this;
+        }
+
     }
 }

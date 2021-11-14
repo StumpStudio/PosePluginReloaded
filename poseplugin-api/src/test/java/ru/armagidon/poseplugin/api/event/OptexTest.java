@@ -13,6 +13,6 @@ public class OptexTest
         event.set("test", "test");
         optex(event).map(e -> event.get("test")).ifPresent(f -> {
             assertEquals("test", f);
-        }).rollback().ifPresent(f -> assertEquals(event, f));
+        }).rollbackMapping().ifPresent(f -> assertEquals(event, f));
     }
 }

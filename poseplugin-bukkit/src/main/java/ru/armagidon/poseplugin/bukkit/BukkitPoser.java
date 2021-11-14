@@ -35,8 +35,12 @@ public class BukkitPoser implements Poser<Player>
     //TODO add PoseStopEvent
     @Override
     public boolean stopPosing() {
-        POSE.ifPresent(playerPose -> playerPose.stop(getHandle()));
-        POSE = Optional.empty();
+        if (POSE.isEmpty())
+            return false;
+        else {
+            POSE.get().stop(getHandle());
+            POSE = Optional.empty();
+        }
         return true;
     }
 

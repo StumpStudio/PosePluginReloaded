@@ -7,3 +7,6 @@ description: Give you opportunity to change your pose
 softdepend:  [ProtocolLib]
 commands:
   posebuilder:
+    usage: "/posebuilder [options...]"
+  posestop:
+    usage: ""

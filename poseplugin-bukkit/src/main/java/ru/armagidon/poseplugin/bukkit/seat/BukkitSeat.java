@@ -14,7 +14,7 @@ public class BukkitSeat extends Seat<Player>
 
     private static final String SCOREBOARD_TAG = "PosePlugin";
 
-    private static final Pool<Seat<Player>> seatPool = new Pool<>(BukkitSeat::new);
+    private static final Pool<Player, Seat<Player>> seatPool = new Pool<>(p -> new BukkitSeat());
 
     private ArmorStand seat;
 
@@ -38,7 +38,7 @@ public class BukkitSeat extends Seat<Player>
         return seat != null ? seat.getEntityId() : -1;
     }
 
-    public static Pool<Seat<Player>> getSeatPool() {
+    public static Pool<Player, Seat<Player>> getSeatPool() {
         return seatPool;
     }
 

@@ -5,11 +5,13 @@ import org.bukkit.plugin.java.JavaPlugin;
 import ru.armagidon.poseplugin.api.player.PlayerMap;
 import ru.armagidon.poseplugin.api.subsystems.PlayerHider;
 import ru.armagidon.poseplugin.api.subsystems.doppelganger.NPCTracker;
+import ru.armagidon.poseplugin.api.utility.Pair;
 import ru.armagidon.poseplugin.bukkit.BukkitPlayerHider;
 import ru.armagidon.poseplugin.bukkit.BukkitPlayerMap;
 import ru.armagidon.poseplugin.bukkit.doppelganger.BukkitNPCTracker;
 import ru.armagidon.poseplugin.bukkit.seat.SeatDaemon;
 import ru.armagidon.poseplugin.plugin.PoseBuilderCommand;
+import ru.armagidon.poseplugin.plugin.PoseStopCommand;
 
 import static ru.armagidon.poseplugin.api.utility.Optex.optex;
 
@@ -41,10 +43,14 @@ public class PosePlugin extends JavaPlugin
                 () -> NPCTracker.init(new BukkitNPCTracker(this)));
 
 
-        final var pbcommand = new PoseBuilderCommand();
         optex(getCommand("posebuilder"))
-                .ifPresent(c -> c.setExecutor(pbcommand))
-                .ifPresent(c -> c.setTabCompleter(pbcommand));
+                .map(c -> Pair.of(c, new PoseBuilderCommand()))
+                .ifPresent(p -> p.first().setExecutor(p.second()))
+                .ifPresent(p -> p.first().setTabCompleter(p.second()));
+        optex(getCommand("posestop"))
+                .map(c -> Pair.of(c, new PoseStopCommand()))
+                .ifPresent(p -> p.first().setExecutor(p.second()))
+                .ifPresent(p -> p.first().setTabCompleter(p.second()));
 
     }
 

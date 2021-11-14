@@ -51,11 +51,13 @@ public class WrapperPlayServerRelEntityMoveLook extends AbstractPacket {
 
 	/**
 	 * Set Entity ID.
-	 * 
+	 *
 	 * @param value - new value.
+	 * @return
 	 */
-	public void setEntityID(int value) {
+	public WrapperPlayServerRelEntityMoveLook setEntityID(int value) {
 		handle.getIntegers().write(0, value);
+		return this;
 	}
 
 	/**
@@ -91,9 +93,11 @@ public class WrapperPlayServerRelEntityMoveLook extends AbstractPacket {
 	 * Set DX.
 	 *
 	 * @param value - new value.
+	 * @return
 	 */
-	public void setDx(double value) {
+	public WrapperPlayServerRelEntityMoveLook setDx(double value) {
 		handle.getShorts().write(0, (short) (value * 4096));
+		return this;
 	}
 
 	/**
@@ -109,9 +113,11 @@ public class WrapperPlayServerRelEntityMoveLook extends AbstractPacket {
 	 * Set DY.
 	 *
 	 * @param value - new value.
+	 * @return
 	 */
-	public void setDy(double value) {
+	public WrapperPlayServerRelEntityMoveLook setDy(double value) {
 		handle.getShorts().write(1, (short) (value * 4096));
+		return this;
 	}
 
 	/**
@@ -127,9 +133,11 @@ public class WrapperPlayServerRelEntityMoveLook extends AbstractPacket {
 	 * Set DZ.
 	 *
 	 * @param value - new value.
+	 * @return
 	 */
-	public void setDz(double value) {
+	public WrapperPlayServerRelEntityMoveLook setDz(double value) {
 		handle.getShorts().write(2, (short) (value * 4096));
+		return this;
 	}
 
 	/**
@@ -143,11 +151,13 @@ public class WrapperPlayServerRelEntityMoveLook extends AbstractPacket {
 
 	/**
 	 * Set the yaw of the current entity.
-	 * 
+	 *
 	 * @param value - new yaw.
+	 * @return
 	 */
-	public void setYaw(float value) {
+	public WrapperPlayServerRelEntityMoveLook setYaw(float value) {
 		handle.getBytes().write(0, (byte) (value * 256.0F / 360.0F));
+		return this;
 	}
 
 	/**
@@ -161,11 +171,13 @@ public class WrapperPlayServerRelEntityMoveLook extends AbstractPacket {
 
 	/**
 	 * Set the pitch of the current entity.
-	 * 
+	 *
 	 * @param value - new pitch.
+	 * @return
 	 */
-	public void setPitch(float value) {
+	public WrapperPlayServerRelEntityMoveLook setPitch(float value) {
 		handle.getBytes().write(1, (byte) (value * 256.0F / 360.0F));
+		return this;
 	}
 
 	/**
@@ -179,10 +191,12 @@ public class WrapperPlayServerRelEntityMoveLook extends AbstractPacket {
 
 	/**
 	 * Set On Ground.
-	 * 
+	 *
 	 * @param value - new value.
+	 * @return
 	 */
-	public void setOnGround(boolean value) {
+	public WrapperPlayServerRelEntityMoveLook setOnGround(boolean value) {
 		handle.getBooleans().write(0, value);
+		return this;
 	}
 }
