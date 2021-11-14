@@ -38,7 +38,7 @@ public abstract class PlayerMap<PlayerHandle>
     }
 
     @SuppressWarnings("unchecked")
-    public static <P>PlayerMap<P> getInstance() {
+    public static <P> PlayerMap<P> getInstance() {
         return PLAYER_MAP_INSTANCE;
     }
 
@@ -46,7 +46,6 @@ public abstract class PlayerMap<PlayerHandle>
      * Retrieves instance of ${@link Poser} from ${@link #PLAYER_MAP}
      * @param uuid UUID of a player.
      * @return Instance of ${@link Poser} with given UUID or null when such player with given UUID does not exist.
-     * @throws ClassCastException when given playerClazz and player's actual handle class does not match.
      * */
 
     @Nullable

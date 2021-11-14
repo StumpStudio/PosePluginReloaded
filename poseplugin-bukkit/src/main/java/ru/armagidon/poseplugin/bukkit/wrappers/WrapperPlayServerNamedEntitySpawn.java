@@ -54,12 +54,14 @@ public class WrapperPlayServerNamedEntitySpawn extends AbstractPacket {
 
 	/**
 	 * Set Entity ID.
-	 * 
-	 * @param value - new value.
-	 */
-	public void setEntityID(int value) {
+	 *
+     * @param value - new value.
+     * @return
+     */
+	public WrapperPlayServerNamedEntitySpawn setEntityID(int value) {
 		handle.getIntegers().write(0, value);
-	}
+        return this;
+    }
 
 	/**
 	 * Retrieve the entity of the painting that will be spawned.
@@ -94,11 +96,13 @@ public class WrapperPlayServerNamedEntitySpawn extends AbstractPacket {
 
 	/**
 	 * Set Player UUID.
-	 * 
+	 *
 	 * @param value - new value.
+	 * @return
 	 */
-	public void setPlayerUUID(UUID value) {
+	public WrapperPlayServerNamedEntitySpawn setPlayerUUID(UUID value) {
 		handle.getUUIDs().write(0, value);
+		return this;
 	}
 
 	/**
@@ -125,24 +129,27 @@ public class WrapperPlayServerNamedEntitySpawn extends AbstractPacket {
 		return handle.getDoubles().read(0);
 	}
 
-	public void setX(double value) {
+	public WrapperPlayServerNamedEntitySpawn setX(double value) {
 		handle.getDoubles().write(0, value);
+		return this;
 	}
 
 	public double getY() {
 		return handle.getDoubles().read(1);
 	}
 
-	public void setY(double value) {
+	public WrapperPlayServerNamedEntitySpawn setY(double value) {
 		handle.getDoubles().write(1, value);
+		return this;
 	}
 
 	public double getZ() {
 		return handle.getDoubles().read(2);
 	}
 
-	public void setZ(double value) {
+	public WrapperPlayServerNamedEntitySpawn setZ(double value) {
 		handle.getDoubles().write(2, value);
+		return this;
 	}
 
 	/**
@@ -156,11 +163,13 @@ public class WrapperPlayServerNamedEntitySpawn extends AbstractPacket {
 
 	/**
 	 * Set the yaw of the spawned entity.
-	 * 
+	 *
 	 * @param value - new yaw.
+	 * @return
 	 */
-	public void setYaw(float value) {
+	public WrapperPlayServerNamedEntitySpawn setYaw(float value) {
 		handle.getBytes().write(0, (byte) (value * 256.0F / 360.0F));
+		return this;
 	}
 
 	/**
@@ -174,11 +183,13 @@ public class WrapperPlayServerNamedEntitySpawn extends AbstractPacket {
 
 	/**
 	 * Set the pitch of the spawned entity.
-	 * 
+	 *
 	 * @param value - new pitch.
+	 * @return
 	 */
-	public void setPitch(float value) {
+	public WrapperPlayServerNamedEntitySpawn setPitch(float value) {
 		handle.getBytes().write(1, (byte) (value * 256.0F / 360.0F));
+		return this;
 	}
 
 	/**

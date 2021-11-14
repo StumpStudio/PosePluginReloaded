@@ -21,8 +21,8 @@ public class AbstractPose<P> implements Pose<P>
     }
 
     @Override
-    public synchronized void stop() {
-        runtimeBatch.runDestruct();
+    public synchronized void stop(P player) {
+        runtimeBatch.runDestruct(player);
         this.user = null;
     }
 

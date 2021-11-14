@@ -5,7 +5,6 @@ import ru.armagidon.poseplugin.api.utility.property.Property;
 
 import java.util.Arrays;
 
-//TODO implement builder. P.s monad way
 public class PoseBuilder<P>
 {
 

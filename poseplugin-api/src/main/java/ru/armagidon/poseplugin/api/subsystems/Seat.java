@@ -1,4 +1,4 @@
-package ru.armagidon.poseplugin.api.utility;
+package ru.armagidon.poseplugin.api.subsystems;
 
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;

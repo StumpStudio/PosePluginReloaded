@@ -9,7 +9,7 @@ public interface Pose<P>
 
     void start(P player);
 
-    void stop();
+    void stop(P player);
 
     PropertyMap getProperties();
 

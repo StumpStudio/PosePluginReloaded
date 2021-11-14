@@ -71,7 +71,7 @@ public class WrapperPlayServerEntityDestroy extends AbstractPacket {
 			try {
 				handle.getIntegers().write(0, value[0]);
 			} catch (FieldAccessException notIntExcept) {
-				//Well, if this happens, Mojangs probably hired new JS devs for Java and then we need to use IntList
+				//Well, if this happens, Mojang's probably hired new JS devs for Java, and then we need to use IntList
 				handle.getIntLists().write(0, Arrays.stream(value).boxed().toList());
 			}
 		}

@@ -10,15 +10,19 @@ import java.util.function.Function;
 public abstract class BatchBuilder<P> {
 
 
-    protected final ImmutableList.Builder<Pair<Consumer<P>, Runnable>> instructions = ImmutableList.builder();
+    protected final ImmutableList.Builder<Pair<Consumer<P>, Consumer<P>>> instructions = ImmutableList.builder();
 
     public abstract BatchBuilder<P> useSeat(Function<Poser<P>, Boolean> dismountCallback);
+
+    public abstract BatchBuilder<P> usePlayerHider();
+
+    public abstract BatchBuilder<P> useDoppelganger();
 
     public final Batch<P> create() {
         return new Batch<>(instructions.build());
     }
 
-    public ImmutableList.Builder<Pair<Consumer<P>, Runnable>> instructions() {
+    public ImmutableList.Builder<Pair<Consumer<P>, Consumer<P>>> instructions() {
         return instructions;
     }
 }

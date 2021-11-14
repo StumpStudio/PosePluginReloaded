@@ -1,7 +1,7 @@
 package ru.armagidon.poseplugin.bukkit;
 
 import org.bukkit.entity.Player;
-import ru.armagidon.poseplugin.api.utility.NameTagHider;
+import ru.armagidon.poseplugin.api.subsystems.NameTagHider;
 
 //TODO implement BukkitNameTagHider
 public class BukkitNameTagHider extends NameTagHider<Player> {

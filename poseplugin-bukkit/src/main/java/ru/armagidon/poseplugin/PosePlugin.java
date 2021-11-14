@@ -1,24 +1,20 @@
 package ru.armagidon.poseplugin;
 
 import org.bukkit.Bukkit;
-import org.bukkit.command.Command;
-import org.bukkit.command.CommandSender;
-import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
-import org.jetbrains.annotations.NotNull;
-import ru.armagidon.poseplugin.api.PosePluginAPI;
 import ru.armagidon.poseplugin.api.player.PlayerMap;
-import ru.armagidon.poseplugin.api.pose.Pose;
-import ru.armagidon.poseplugin.api.pose.PoseBuilder;
-import ru.armagidon.poseplugin.bukkit.BukkitBatchBuilder;
+import ru.armagidon.poseplugin.api.subsystems.PlayerHider;
+import ru.armagidon.poseplugin.api.subsystems.doppelganger.NPCTracker;
+import ru.armagidon.poseplugin.bukkit.BukkitPlayerHider;
 import ru.armagidon.poseplugin.bukkit.BukkitPlayerMap;
-import ru.armagidon.poseplugin.bukkit.BukkitPosePluginAPI;
-import ru.armagidon.poseplugin.bukkit.BukkitSeat;
+import ru.armagidon.poseplugin.bukkit.doppelganger.BukkitNPCTracker;
+import ru.armagidon.poseplugin.bukkit.seat.SeatDaemon;
+import ru.armagidon.poseplugin.plugin.PoseBuilderCommand;
+
+import static ru.armagidon.poseplugin.api.utility.Optex.optex;
 
 public class PosePlugin extends JavaPlugin
 {
-
-    Pose<Player> pose;
 
     @Override
     public void onLoad() {
@@ -27,24 +23,29 @@ public class PosePlugin extends JavaPlugin
 
     @Override
     public void onEnable() {
-        //Init API
-        getLogger().info("Initializing PosePluginAPI....");
-        PosePluginAPI.init(new BukkitPosePluginAPI());
-        getLogger().info("PosePluginAPI initialized");
         //Create player map
-        getLogger().info("Creating PlayerMap....");
-        PlayerMap.init(new BukkitPlayerMap(this));
-        getLogger().info("PlayerMap created");
+
+        initSubsystem("Creating PlayerMap....","PlayerMap created",
+                () -> PlayerMap.init(new BukkitPlayerMap(this)));
+
         //Register players
         Bukkit.getOnlinePlayers().forEach(p -> PlayerMap.getInstance().registerPlayer(p.getUniqueId()));
         //Start seat daemon
-        getLogger().info("Starting seat daemon....");
-        BukkitSeat.SeatDaemon.start(this);
-        getLogger().info("Seat daemon started");
+        initSubsystem("Starting seat daemon....", "Seat daemon started",
+                () -> SeatDaemon.start(this));
+        //Start player hider
+        initSubsystem("Starting player hider....", "Player hider started",
+                () -> PlayerHider.init(new BukkitPlayerHider(this)));
+        //Start npc tracker
+        initSubsystem("Starting npc tracker...", "npc tracker started",
+                () -> NPCTracker.init(new BukkitNPCTracker(this)));
 
-        getCommand("sit").setExecutor(this);
 
-        pose = PoseBuilder.<Player>create().setup(new BukkitBatchBuilder().useSeat(p -> !p.stopPosing()).create()).build();
+        final var pbcommand = new PoseBuilderCommand();
+        optex(getCommand("posebuilder"))
+                .ifPresent(c -> c.setExecutor(pbcommand))
+                .ifPresent(c -> c.setTabCompleter(pbcommand));
+
     }
 
     @Override
@@ -52,10 +53,9 @@ public class PosePlugin extends JavaPlugin
         PlayerMap.getInstance().unregisterAll();
     }
 
-    @Override
-    public boolean onCommand(@NotNull CommandSender sender, @NotNull Command command, @NotNull String label, @NotNull String[] args) {
-        if (!(sender instanceof Player player)) return true;
-        PlayerMap.<Player>getInstance().getPlayer(player.getUniqueId()).changePose(pose);
-        return true;
+    private void initSubsystem(String start, String end, Runnable initializer) {
+        getLogger().info(start);
+        initializer.run();
+        getLogger().info(end);
     }
 }
