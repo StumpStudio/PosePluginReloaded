@@ -37,7 +37,7 @@ public class BukkitNPCTracker extends NPCTracker<Player> implements Listener
 
     @Override
     public void unregisterNPC(Doppelganger<Player, ?, ?> doppelganger) {
-        doppelganger.broadCastDespawn();
+        doppelganger.broadcastDespawn();
         super.unregisterNPC(doppelganger);
     }
 

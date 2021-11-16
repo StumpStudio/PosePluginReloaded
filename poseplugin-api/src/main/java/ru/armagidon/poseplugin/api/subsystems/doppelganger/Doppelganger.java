@@ -1,12 +1,14 @@
 package ru.armagidon.poseplugin.api.subsystems.doppelganger;
 
 import lombok.Getter;
+import lombok.Setter;
 import ru.armagidon.poseplugin.api.utility.DataTable;
+import ru.armagidon.poseplugin.api.utility.batch.Batch;
 
 import java.util.UUID;
 import java.util.concurrent.ThreadLocalRandom;
 
-//TODO optimize
+//TODO Implement start and end batches
 public abstract class Doppelganger<P, I, D>
 {
 
@@ -17,21 +19,24 @@ public abstract class Doppelganger<P, I, D>
     @Getter private final DataTable<Slot, I> inventory = new DataTable<>();
     @Getter protected DoppelgangerProperties<P, D> properties;
 
+    @Setter protected Batch<P> startBatch;
+    @Setter protected Batch<P> endBatch;
+
     protected Doppelganger(P original) {
         this.original = original;
         this.entityId = ThreadLocalRandom.current().nextInt(Integer.MAX_VALUE);
         this.uuid = UUID.randomUUID();
     }
 
-    public abstract void broadCastSpawn();
+    public abstract void broadcastSpawn();
 
-    public abstract void broadCastDespawn();
+    public abstract void broadcastDespawn();
 
     public abstract void render(P receiver);
 
     public abstract void unrender(P receiver);
 
-    public abstract void lay(Direction direction);
+    //public abstract void lay(Direction direction);
 
     public abstract Pos getPosition();
 

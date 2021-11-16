@@ -23,7 +23,6 @@ import static ru.armagidon.poseplugin.bukkit.utilities.SyncUtils.delay;
 
 public class BukkitDoppelganger extends Doppelganger<Player, ItemStack, WrappedDataWatcher>
 {
-
     public static final Pool<Player, Doppelganger<Player, ItemStack, ?>> DOPPELGANGER_POOL = new Pool<>(BukkitDoppelganger::new);
 
     private final WrappedGameProfile profile;
@@ -36,12 +35,12 @@ public class BukkitDoppelganger extends Doppelganger<Player, ItemStack, WrappedD
     }
 
     @Override
-    public void broadCastSpawn() {
+    public void broadcastSpawn() {
         NPCTracker.<Player>getInstance().getTrackersFor(this).forEach(this::render);
     }
 
     @Override
-    public void broadCastDespawn() {
+    public void broadcastDespawn() {
         NPCTracker.<Player>getInstance()
                 .getTrackersFor(this)
                 .forEach(this::unrender);
@@ -66,10 +65,11 @@ public class BukkitDoppelganger extends Doppelganger<Player, ItemStack, WrappedD
                 .runAsync(() -> playerInfoAdd.sendPacket(receiver))
                 .thenRun(() -> spawn.sendPacket(receiver))
                 .thenRun(() -> removeInfo.sendPacket(receiver))
-                .thenRun(() -> basicMetadata.sendPacket(receiver));
+                .thenRun(() -> basicMetadata.sendPacket(receiver))
+                .thenRun(() -> startBatch.run(receiver));
     }
 
-    @Override
+
     public void lay(Direction direction) {
         properties.setPose(Pose.SLEEPING);
         properties.setBedPosition(getPosition());
@@ -91,28 +91,49 @@ public class BukkitDoppelganger extends Doppelganger<Player, ItemStack, WrappedD
 
             delay(() -> receiver.sendBlockChange(new Location(null, bedPos.x(), bedPos.y(), bedPos.z()), bed), 5L);
         });
-
     }
 
     @Override
     public void unrender(Player receiver) {
-        final var destroy = new WrapperPlayServerEntityDestroy();
-        destroy.setEntityIds(getEntityId());
-        CompletableFuture.runAsync(() -> destroy.sendPacket(receiver)).thenRun(() -> {
-            final var bedPos = properties.getBedPosition();
-            Location l = new Location(getOriginal().getWorld(), bedPos.x(), bedPos.y(), bedPos.z());
-            receiver.sendBlockChange(l, l.getBlock().getBlockData());
-        });
-
+        final var destroy = new WrapperPlayServerEntityDestroy().setEntityIds(getEntityId());
+        CompletableFuture
+                .runAsync(() -> destroy.sendPacket(receiver))
+                .thenRun(() -> endBatch.run(receiver));
     }
 
     @Override
     public Pos getPosition() {
-        return new Pos(getOriginal().getWorld().getName(),
+        return new Pos(
+                getOriginal().getWorld().getName(),
                 getOriginal().getLocation().getX(),
                 getOriginal().getLocation().getY(),
                 getOriginal().getLocation().getZ());
     }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
     private static WrapperPlayServerPlayerInfo preparePlayerInfoAddition(WrappedGameProfile profile) {
         return new WrapperPlayServerPlayerInfo().setData(List.of(new PlayerInfoData(profile, 1, EnumWrappers.NativeGameMode.CREATIVE, WrappedChatComponent.fromLegacyText("")))).setAction(EnumWrappers.PlayerInfoAction.ADD_PLAYER);

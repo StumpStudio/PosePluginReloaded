@@ -63,7 +63,7 @@ public class WrapperPlayServerEntityDestroy extends AbstractPacket {
 	 * 
 	 * @param value - new value.
 	 */
-	public void setEntityIds(int... value) {
+	public WrapperPlayServerEntityDestroy setEntityIds(int... value) {
 		try {
 			handle.getIntegerArrays().write(0, value);
 		} catch (FieldAccessException notArrayExcept) {
@@ -75,6 +75,7 @@ public class WrapperPlayServerEntityDestroy extends AbstractPacket {
 				handle.getIntLists().write(0, Arrays.stream(value).boxed().toList());
 			}
 		}
+		return this;
 	}
 
 }

@@ -12,6 +12,4 @@ public interface Pose<P>
     void stop(P player);
 
     PropertyMap getProperties();
-
-    P getCurrentUser();
 }
