@@ -1,15 +1,15 @@
 package ru.armagidon.poseplugin.api.subsystems.doppelganger;
 
-import ru.armagidon.poseplugin.api.subsystems.doppelganger.Doppelganger.Pos;
+import ru.armagidon.poseplugin.api.utility.datastructures.Pos;
+import ru.armagidon.poseplugin.api.utility.enums.Hand;
+import ru.armagidon.poseplugin.api.utility.enums.Pose;
 
-public abstract class DoppelgangerProperties<P, D>
+public abstract class MetadataWrapper<D>
 {
 
-    protected final P source;
     protected final D storage;
 
-    public DoppelgangerProperties(P source, D storage) {
-        this.source = source;
+    public MetadataWrapper(D storage) {
         this.storage = storage;
     }
 

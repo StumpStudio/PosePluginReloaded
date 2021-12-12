@@ -10,21 +10,32 @@ import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.event.player.PlayerTeleportEvent;
 import org.bukkit.plugin.Plugin;
+import ru.armagidon.poseplugin.PosePlugin;
 import ru.armagidon.poseplugin.api.subsystems.doppelganger.Doppelganger;
 import ru.armagidon.poseplugin.api.subsystems.doppelganger.NPCTracker;
-import ru.armagidon.poseplugin.api.subsystems.doppelganger.Doppelganger.Pos;
+import ru.armagidon.poseplugin.api.subsystems.implefine.Implementation;
+import ru.armagidon.poseplugin.api.subsystems.implefine.UseImplementationFor;
+import ru.armagidon.poseplugin.api.utility.LazyObject;
+import ru.armagidon.poseplugin.api.utility.datastructures.Pos;
 
 import java.util.concurrent.CompletableFuture;
 
+import static ru.armagidon.poseplugin.api.utility.LazyObject.lazy;
+
+@UseImplementationFor(parent = NPCTracker.class)
 public class BukkitNPCTracker extends NPCTracker<Player> implements Listener
 {
+
+    @Implementation
+    public static final LazyObject<BukkitNPCTracker> INSTANCE = lazy(() -> new BukkitNPCTracker(PosePlugin.getPlugin(PosePlugin.class)), BukkitNPCTracker.class);
+
     public BukkitNPCTracker(Plugin plugin) {
         Bukkit.getServer().getPluginManager().registerEvents(this, plugin);
     }
 
 
     @Override
-    public void registerNPC(Doppelganger<Player, ?, ?> doppelganger) {
+    public void registerNPC(Doppelganger<Player, ?> doppelganger) {
         super.registerNPC(doppelganger);
         final var location = doppelganger.getOriginal().getLocation().clone();
         Bukkit.getOnlinePlayers().stream()
@@ -36,7 +47,7 @@ public class BukkitNPCTracker extends NPCTracker<Player> implements Listener
     }
 
     @Override
-    public void unregisterNPC(Doppelganger<Player, ?, ?> doppelganger) {
+    public void unregisterNPC(Doppelganger<Player, ?> doppelganger) {
         doppelganger.broadcastDespawn();
         super.unregisterNPC(doppelganger);
     }

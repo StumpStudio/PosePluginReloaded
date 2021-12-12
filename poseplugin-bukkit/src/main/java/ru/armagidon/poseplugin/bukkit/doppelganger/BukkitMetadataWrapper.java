@@ -6,20 +6,22 @@ import com.comphenix.protocol.wrappers.EnumWrappers.EntityPose;
 import com.comphenix.protocol.wrappers.WrappedDataWatcher;
 import com.comphenix.protocol.wrappers.WrappedDataWatcher.Registry;
 import org.bukkit.Bukkit;
-import org.bukkit.entity.Player;
-import ru.armagidon.poseplugin.api.subsystems.doppelganger.*;
+import ru.armagidon.poseplugin.api.subsystems.doppelganger.MetadataWrapper;
+import ru.armagidon.poseplugin.api.utility.datastructures.Pos;
+import ru.armagidon.poseplugin.api.utility.enums.Hand;
+import ru.armagidon.poseplugin.api.utility.enums.Pose;
 
 import java.util.Optional;
 
-public class BukkitDoppelgangerProperties extends DoppelgangerProperties<Player, WrappedDataWatcher>
+public class BukkitMetadataWrapper extends MetadataWrapper<WrappedDataWatcher>
 {
 
     private static final int POSE_INDEX = 6;
     private static final int ENTITY_TAGS_INDEX = 0;
     private final int indexDifference;
 
-    public BukkitDoppelgangerProperties(Player source) {
-        super(source, WrappedDataWatcher.getEntityWatcher(source).deepClone());
+    public BukkitMetadataWrapper(WrappedDataWatcher watcher) {
+        super(watcher.deepClone());
         var diff = 0;
         var success = true;
         do {
@@ -40,7 +42,7 @@ public class BukkitDoppelgangerProperties extends DoppelgangerProperties<Player,
     }
 
     @Override
-    public void setBedPosition(Doppelganger.Pos pos) {
+    public void setBedPosition(Pos pos) {
         synchronized (storage) {
             final var world = Bukkit.getWorld(pos.world());
             var minHeight = 0;
@@ -102,10 +104,10 @@ public class BukkitDoppelgangerProperties extends DoppelgangerProperties<Player,
     }
 
     @Override
-    public Doppelganger.Pos getBedPosition() {
+    public Pos getBedPosition() {
         Optional<BlockPosition> position = ((Optional<?>) storage.getObject(13 + indexDifference)).map(o -> BlockPosition.getConverter().getSpecific(o));
         final var pos = position.get();
-        return new Doppelganger.Pos("", pos.getX(), pos.getY(), pos.getZ());
+        return new Pos("", pos.getX(), pos.getY(), pos.getZ());
     }
 
     @Override

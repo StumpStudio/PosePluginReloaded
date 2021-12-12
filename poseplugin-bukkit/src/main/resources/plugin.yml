@@ -8,5 +8,11 @@ softdepend:  [ProtocolLib]
 commands:
   posebuilder:
     usage: "/posebuilder [options...]"
+    permission: poseplugin.posebuilder
   posestop:
     usage: ""
+    permission: poseplugin.posestop
+  sit:
+    usage: "/sit"
+  lay:
+    usage: "/lay"

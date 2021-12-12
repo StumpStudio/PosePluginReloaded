@@ -2,9 +2,8 @@ package ru.armagidon.poseplugin.api.player;
 
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import ru.armagidon.poseplugin.api.pose.Pose;
+import ru.armagidon.poseplugin.api.subsystems.implefine.Implefine;
 
-import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
@@ -13,9 +12,6 @@ import java.util.function.Function;
 
 public abstract class PlayerMap<PlayerHandle>
 {
-
-    @SuppressWarnings("all")
-    private static PlayerMap PLAYER_MAP_INSTANCE;
 
     private final ReentrantReadWriteLock lock = new ReentrantReadWriteLock();
     private final ReentrantReadWriteLock.WriteLock writeLock = lock.writeLock();
@@ -26,21 +22,12 @@ public abstract class PlayerMap<PlayerHandle>
     private final Function<UUID, Poser<PlayerHandle>> POSER_FACTORY;
 
     protected PlayerMap(Function<UUID, Poser<PlayerHandle>> poserFactory) {
-        if (PLAYER_MAP_INSTANCE != null)
-            throw new IllegalStateException("Player map is initialized");
         this.POSER_FACTORY = poserFactory;
-    }
-
-    public static synchronized <P> PlayerMap<P> init(PlayerMap<P> instance) {
-        if (PLAYER_MAP_INSTANCE != null)
-            throw new IllegalStateException("Player map is initialized");
-        PLAYER_MAP_INSTANCE = instance;
-        return instance;
     }
 
     @SuppressWarnings("unchecked")
     public static <P> PlayerMap<P> getInstance() {
-        return PLAYER_MAP_INSTANCE;
+        return Implefine.get(PlayerMap.class);
     }
 
     public static <P> Poser<P> getPlayer(UUID uuid, Class<P> clazz) {

@@ -1,4 +1,4 @@
-package ru.armagidon.poseplugin.api.utility;
+package ru.armagidon.poseplugin.api.utility.datastructures;
 
 import java.util.function.Function;
 

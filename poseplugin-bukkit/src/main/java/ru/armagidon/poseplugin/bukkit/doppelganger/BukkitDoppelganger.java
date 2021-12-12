@@ -1,37 +1,29 @@
 package ru.armagidon.poseplugin.bukkit.doppelganger;
 
 import com.comphenix.protocol.wrappers.*;
-import org.bukkit.Bukkit;
 import org.bukkit.Location;
-import org.bukkit.Material;
-import org.bukkit.block.BlockFace;
-import org.bukkit.block.data.type.Bed;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
-import ru.armagidon.poseplugin.api.subsystems.doppelganger.Direction;
 import ru.armagidon.poseplugin.api.subsystems.doppelganger.Doppelganger;
 import ru.armagidon.poseplugin.api.subsystems.doppelganger.NPCTracker;
-import ru.armagidon.poseplugin.api.subsystems.doppelganger.Pose;
-import ru.armagidon.poseplugin.api.utility.Pool;
-import ru.armagidon.poseplugin.bukkit.wrappers.*;
+import ru.armagidon.poseplugin.api.utility.datastructures.Pos;
+import ru.armagidon.poseplugin.bukkit.wrappers.WrapperPlayServerEntityDestroy;
+import ru.armagidon.poseplugin.bukkit.wrappers.WrapperPlayServerEntityMetadata;
+import ru.armagidon.poseplugin.bukkit.wrappers.WrapperPlayServerNamedEntitySpawn;
+import ru.armagidon.poseplugin.bukkit.wrappers.WrapperPlayServerPlayerInfo;
 
 import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 
-import static ru.armagidon.poseplugin.bukkit.utilities.SyncUtils.delay;
-
-public class BukkitDoppelganger extends Doppelganger<Player, ItemStack, WrappedDataWatcher>
+public class BukkitDoppelganger extends Doppelganger<Player, ItemStack>
 {
-    public static final Pool<Player, Doppelganger<Player, ItemStack, ?>> DOPPELGANGER_POOL = new Pool<>(BukkitDoppelganger::new);
-
     private final WrappedGameProfile profile;
 
     public BukkitDoppelganger(Player original) {
         super(original);
         this.profile = new WrappedGameProfile(getUuid(), "");
         this.profile.getProperties().putAll(WrappedGameProfile.fromPlayer(original).getProperties());
-        this.properties = new BukkitDoppelgangerProperties(original);
     }
 
     @Override
@@ -59,38 +51,14 @@ public class BukkitDoppelganger extends Doppelganger<Player, ItemStack, WrappedD
         final var removeInfo = preparePlayerInfoRemoval(this.profile);
 
         //Prepare basic metadata
-        final var basicMetadata = prepareMetadata(properties.getStorage());
+        final var basicMetadata = prepareMetadata(WrappedDataWatcher.getEntityWatcher(getOriginal()));
 
         CompletableFuture
                 .runAsync(() -> playerInfoAdd.sendPacket(receiver))
                 .thenRun(() -> spawn.sendPacket(receiver))
                 .thenRun(() -> removeInfo.sendPacket(receiver))
                 .thenRun(() -> basicMetadata.sendPacket(receiver))
-                .thenRun(() -> startBatch.run(receiver));
-    }
-
-
-    public void lay(Direction direction) {
-        properties.setPose(Pose.SLEEPING);
-        properties.setBedPosition(getPosition());
-
-        final var metadata = prepareMetadata(this.properties.getStorage());
-
-        Bed bed = (Bed) Bukkit.createBlockData(Material.WHITE_BED);
-        bed.setPart(Bed.Part.HEAD);
-        bed.setFacing(BlockFace.valueOf(direction.name()).getOppositeFace());
-        final var bedPos = properties.getBedPosition();
-
-        final var movePacket = new WrapperPlayServerRelEntityMoveLook()
-                .setEntityID(getEntityId()).setDy(0).setDx(0).setDz(0);
-
-        NPCTracker.<Player>getInstance().getTrackersFor(this).forEach(receiver -> {
-            CompletableFuture
-                    .runAsync(() -> metadata.sendPacket(receiver))
-                    .thenRun(() -> movePacket.sendPacket(receiver));
-
-            delay(() -> receiver.sendBlockChange(new Location(null, bedPos.x(), bedPos.y(), bedPos.z()), bed), 5L);
-        });
+                .thenRun(() -> commandExecutor.runStartup(receiver));
     }
 
     @Override
@@ -98,7 +66,13 @@ public class BukkitDoppelganger extends Doppelganger<Player, ItemStack, WrappedD
         final var destroy = new WrapperPlayServerEntityDestroy().setEntityIds(getEntityId());
         CompletableFuture
                 .runAsync(() -> destroy.sendPacket(receiver))
-                .thenRun(() -> endBatch.run(receiver));
+                .thenRun(() -> {
+                    try {
+                        commandExecutor.runStop(receiver);
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                });
     }
 
     @Override

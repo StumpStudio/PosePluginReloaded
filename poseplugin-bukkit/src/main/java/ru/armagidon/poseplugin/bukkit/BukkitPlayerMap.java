@@ -8,10 +8,19 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.plugin.Plugin;
+import ru.armagidon.poseplugin.PosePlugin;
 import ru.armagidon.poseplugin.api.player.PlayerMap;
+import ru.armagidon.poseplugin.api.subsystems.implefine.Implementation;
+import ru.armagidon.poseplugin.api.subsystems.implefine.UseImplementationFor;
+import ru.armagidon.poseplugin.api.utility.LazyObject;
 
+import static ru.armagidon.poseplugin.api.utility.LazyObject.lazy;
+
+@UseImplementationFor(parent = PlayerMap.class)
 public class BukkitPlayerMap extends PlayerMap<Player> implements Listener
 {
+    @Implementation
+    private static final LazyObject<BukkitPlayerMap> PLAYER_MAP_INSTANCE = lazy(() -> new BukkitPlayerMap(PosePlugin.getPlugin(PosePlugin.class)), BukkitPlayerMap.class);
 
     public BukkitPlayerMap(Plugin plugin) {
         super((uuid) -> new BukkitPoser(Bukkit.getPlayer(uuid)));

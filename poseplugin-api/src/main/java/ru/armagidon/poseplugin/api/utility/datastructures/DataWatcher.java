@@ -1,4 +1,4 @@
-package ru.armagidon.poseplugin.api.utility;
+package ru.armagidon.poseplugin.api.utility.datastructures;
 
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -7,7 +7,7 @@ import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
-public class DataTable<KeyType, ValueType>
+public class DataWatcher<KeyType, ValueType>
 {
 
     private final Map<KeyType, DataObject<KeyType, ValueType>> table = new ConcurrentHashMap<>();
@@ -52,14 +52,13 @@ public class DataTable<KeyType, ValueType>
     }
 
     @NotNull
-    public synchronized Set<DataObject<KeyType, ValueType>> getDirty() {
+    public synchronized Set<DataObject<KeyType, ValueType>> getModified() {
         if (!dirty) return Collections.emptySet();
-        var list = getAll().stream()
+        dirty = false;
+        return getAll().stream()
                 .filter(DataObject::isDirty)
                 .peek(DataObject::clean)
                 .collect(Collectors.toUnmodifiableSet());
-        dirty = false;
-        return list;
     }
 
 

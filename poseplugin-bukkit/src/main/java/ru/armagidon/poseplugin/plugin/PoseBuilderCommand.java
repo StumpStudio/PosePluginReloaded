@@ -12,8 +12,11 @@ import ru.armagidon.poseplugin.api.player.PlayerMap;
 import ru.armagidon.poseplugin.api.pose.Pose;
 import ru.armagidon.poseplugin.api.pose.PoseBatchBuilder;
 import ru.armagidon.poseplugin.api.pose.PoseBuilder;
+import ru.armagidon.poseplugin.api.subsystems.doppelganger.DoppelgangerCommandExecutor;
 import ru.armagidon.poseplugin.api.utility.batch.BatchBuilder;
+import ru.armagidon.poseplugin.api.utility.enums.Direction;
 import ru.armagidon.poseplugin.bukkit.BukkitPoseBatchBuilder;
+import ru.armagidon.poseplugin.bukkit.doppelganger.BukkitDoppelgangerCommandExecutor;
 
 import java.lang.reflect.Method;
 import java.util.Arrays;
@@ -41,7 +44,8 @@ public class PoseBuilderCommand implements CommandExecutor, TabCompleter
                 switch (input) {
                     case "useseat" -> setupBatchBuilder.useSeat(p -> !p.stopPosing());
                     case "useplayerhider" -> setupBatchBuilder.usePlayerHider();
-                    case "usedoppelganger" -> setupBatchBuilder.useDoppelganger();
+                    case "usedoppelganger" -> setupBatchBuilder.useDoppelganger(executor ->
+                            executor.lay(Direction.yawToDirection(player.getLocation().getYaw()).getOpposite()));
                 }
             };
 

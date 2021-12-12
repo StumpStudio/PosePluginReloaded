@@ -3,7 +3,7 @@ package ru.armagidon.poseplugin.bukkit.seat;
 import org.bukkit.Location;
 import org.bukkit.entity.ArmorStand;
 import org.bukkit.entity.Player;
-import ru.armagidon.poseplugin.api.utility.Pool;
+import ru.armagidon.poseplugin.api.utility.datastructures.Pool;
 import ru.armagidon.poseplugin.api.subsystems.Seat;
 
 import static ru.armagidon.poseplugin.bukkit.utilities.SyncUtils.sync;

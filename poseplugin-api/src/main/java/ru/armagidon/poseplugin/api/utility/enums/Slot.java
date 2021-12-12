@@ -1,4 +1,4 @@
-package ru.armagidon.poseplugin.api.subsystems.doppelganger;
+package ru.armagidon.poseplugin.api.utility.enums;
 
 public enum Slot
 {

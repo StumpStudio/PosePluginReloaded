@@ -21,4 +21,8 @@ public class Batch<T>
     public final int commandsCount() {
         return commands.size();
     }
+
+    public BatchBuilder<T> modify() {
+        return new BatchBuilder<>(ImmutableList.<Consumer<T>>builder().addAll(this.commands));
+    }
 }

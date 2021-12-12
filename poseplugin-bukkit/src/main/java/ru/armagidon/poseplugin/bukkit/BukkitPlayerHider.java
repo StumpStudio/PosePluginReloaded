@@ -9,7 +9,12 @@ import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.Plugin;
+import ru.armagidon.poseplugin.PosePlugin;
+import ru.armagidon.poseplugin.api.player.PlayerMap;
 import ru.armagidon.poseplugin.api.subsystems.PlayerHider;
+import ru.armagidon.poseplugin.api.subsystems.implefine.Implementation;
+import ru.armagidon.poseplugin.api.subsystems.implefine.UseImplementationFor;
+import ru.armagidon.poseplugin.api.utility.LazyObject;
 import ru.armagidon.poseplugin.bukkit.utilities.EquipmentPacketExtension;
 import ru.armagidon.poseplugin.bukkit.wrappers.WrapperPlayServerEntityEquipment;
 import ru.armagidon.poseplugin.bukkit.wrappers.WrapperPlayServerEntityMetadata;
@@ -20,13 +25,17 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import static com.comphenix.protocol.PacketType.Play.Server.ENTITY_EQUIPMENT;
 import static com.comphenix.protocol.PacketType.Play.Server.ENTITY_METADATA;
+import static ru.armagidon.poseplugin.api.utility.LazyObject.lazy;
 import static ru.armagidon.poseplugin.bukkit.utilities.EquipmentPacketExtension.isModernPacketVersion;
 
 //TODO implement BukkitPlayerHider
+@UseImplementationFor(parent = PlayerHider.class)
 public class BukkitPlayerHider extends PlayerHider<Player>
 {
 
 
+    @Implementation
+    private static final LazyObject<BukkitPlayerHider> PLAYER_HIDER_INSTANCE = lazy(() -> new BukkitPlayerHider(PosePlugin.getPlugin(PosePlugin.class)), BukkitPlayerHider.class);
     private final HidingDaemon daemon;
 
     public BukkitPlayerHider(Plugin plugin) {

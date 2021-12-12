@@ -4,15 +4,24 @@ import com.google.common.collect.ImmutableList;
 
 import java.util.function.Consumer;
 
-public abstract class BatchBuilder<T> {
+public class BatchBuilder<T> {
 
-    protected final ImmutableList.Builder<Consumer<T>> instructions = ImmutableList.builder();
+    protected final ImmutableList.Builder<Consumer<T>> instructions;
+
+    public BatchBuilder(ImmutableList.Builder<Consumer<T>> source) {
+        this.instructions = source;
+    }
+
+    public BatchBuilder() {
+        this(ImmutableList.builder());
+    }
 
     public final Batch<T> create() {
         return new Batch<>(instructions.build());
     }
 
-    public ImmutableList.Builder<Consumer<T>> instructions() {
-        return instructions;
+    public BatchBuilder<T> add(Consumer<T> command) {
+        instructions.add(command);
+        return this;
     }
 }
